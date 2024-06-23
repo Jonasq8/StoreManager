@@ -1,0 +1,40 @@
+﻿@attribute [Authorize]
+
+
+@page "/edit-chain/{id:guid}"
+@inject IChainDB ChainDB
+@using StoreManager.Models
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+
+<h3>Edit Chain</h3>
+
+
+    <EditForm Model="chain" OnSubmit="HandleSubmit" FormName="EditForm ">
+        <label>Name</label>
+        <InputText @bind-Value="chain.Name"> @chain.Name</InputText>
+        <button type="submit">Submit</button>
+    </EditForm>
+
+
+@code {
+    public Chain chain { get; set; } = new Chain();
+
+    [Parameter]
+    public Guid Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        chain = await ChainDB.GetChainById(Id);
+        
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (chain != null)
+        {
+            await ChainDB.UpdateChain(chain);
+        }
+        NavigationManager.NavigateTo("chains");
+    }
+}

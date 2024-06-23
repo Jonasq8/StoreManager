@@ -1,0 +1,32 @@
+﻿@* @inject NavigationManager NavigationManager
+
+@rendermode InteractiveServer
+
+<button @onclick="EditStore">Edit</button>
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    void EditStore()
+    {
+        NavigationManager.NavigateTo("/edit-store/" + Id);
+    }
+} *@
+
+@attribute [Authorize]
+
+@inject NavigationManager NavigationManager
+
+@rendermode InteractiveServer
+
+<button @onclick="EditChain">Edit</button>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    void EditChain()
+    {
+        NavigationManager.NavigateTo("/edit-store/" + Id);
+    }
+}

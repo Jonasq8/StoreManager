@@ -1,0 +1,33 @@
+﻿@inject IProfileDB ProfileDB
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
+
+
+
+<button class="btn btn-danger" @onclick="DeleteProfile">Delete</button>
+
+@if (!String.IsNullOrEmpty(ErrorMessage))
+{
+    <p style="color:red">@ErrorMessage</p>
+}
+
+@code {
+    [Parameter]
+    public string EMail { get; set; }
+    public string ErrorMessage { get; set; }
+    private async Task DeleteProfile()
+    {
+        try
+        {
+            await ProfileDB.DeleteProfile(EMail);
+            NavigationManager.NavigateTo("/profiles", true);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+       
+    
+    }
+}

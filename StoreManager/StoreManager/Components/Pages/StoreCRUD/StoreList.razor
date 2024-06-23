@@ -1,0 +1,75 @@
+﻿@page "/stores"
+
+
+
+
+@using StoreManager.Models
+@attribute [StreamRendering(true)]
+
+@* @attribute [Authorize(Roles = "Admin")] *@
+@attribute [Authorize] 
+@inject IStoreDB StoreDB
+
+<h3>Stores </h3>
+@if (Stores == null)
+{
+    <span>Loading...</span>
+}
+else if (Stores.Count == 0)
+{
+    <span>No Stores</span>
+}
+else
+{
+    <table>
+        <tr>
+            <th>@nameof(Store.Id)</th>
+            <th>@nameof(Store.Number)</th>
+            <th>@nameof(Store.Name)</th>
+            <th>@nameof(Store.Address)</th>
+            <th>@nameof(Store.PostalCode)</th>
+            <th>@nameof(Store.City)</th>
+            <th>@nameof(Store.Phone)</th>
+            <th>@nameof(Store.EMail)</th>
+            <th>@nameof(Store.StoreOwner)</th>
+            <th>@nameof(Store.CreatedOn)</th>
+            <th>@nameof(Store.ModifiedOn)</th>
+            <th>@nameof(Store.ChainID)</th>
+            <th>Actions</th>
+        </tr>
+
+        @foreach (Store store in Stores)
+        {
+            <tr>
+                <td>@store.Id</td>
+                <td>@store.Number</td>
+                <td>@store.Name</td>
+                <td>@store.Address</td>
+                <td>@store.PostalCode</td>
+                <td>@store.City</td>
+                <td>@store.Phone</td>
+                <td>@store.EMail</td>
+                <td>@store.StoreOwner</td>
+                <td>@store.CreatedOn</td>
+                <td>@store.ModifiedOn</td>
+                <td>@store.ChainID</td>
+                <td>
+                    <EditStoreButton Id="@store.Id" />
+                    <DeleteStoreButton Id="@store.Id" />
+                </td>
+            </tr>
+        }
+    </table>
+}
+<CreateStoreButton />
+
+@code {
+    List<Store>? Stores = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Stores = await StoreDB.GetStores();
+    }
+
+
+}

@@ -1,0 +1,58 @@
+﻿@page "/chains"
+@attribute [Authorize]
+
+
+@using StoreManager.Models
+@attribute [StreamRendering(true)]
+
+@inject IChainDB ChainDB
+
+<h3 class="w-100">Chain</h3>
+@if (chains == null)
+{
+    <span> Loading </span>
+}
+else if (chains.Count == 0)
+{
+    <span> No chains </span>
+}
+else
+{
+    <table class="flex flex-row">
+        <tr class="m-10">
+            <th>@nameof(Chain.Id)</th>
+            <th>@nameof(Chain.Name)</th>
+            <th>@nameof(Chain.CreatedOn)</th>
+            <th>@nameof(Chain.ModifiedOn)</th>
+            <th>Actions</th>
+        </tr>
+      
+        @foreach (Chain chain1 in chains)
+        {
+            <tr>
+                <td> @chain1.Id  </td>
+                <td> @chain1.Name  </td>
+                <td> @chain1.CreatedOn  </td>
+                <td> @chain1.ModifiedOn  </td>
+                <td> <EditChainButton Id="chain1.Id" /> <DeleteChainButton Id="chain1.Id"/> </td>
+            </tr>
+        }
+    </table>
+
+    @* <ul>
+        @foreach (Chain chain1 in chains)
+        {
+            <li> @chain1.Name <EditChainButton Id="chain1.Id" /> </li>
+        }
+    </ul> *@
+}
+<CreateChainButton/>
+
+@code {
+    List<Chain>? chains = null;
+    protected override async Task OnInitializedAsync()
+    {
+        chains = await ChainDB.GetChains();
+       
+    }
+}

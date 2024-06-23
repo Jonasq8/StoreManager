@@ -1,0 +1,85 @@
+﻿@page "/create-store"
+
+@attribute [Authorize]
+
+@inject IStoreDB StoreDB
+@inject IChainDB ChainDB
+@using StoreManager.Models
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<h3>Create Store</h3>
+
+<EditForm Model="store" OnSubmit="HandleSubmit" FormName="CreateStore">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <label>Name</label>
+    <InputText @bind-Value="store.Name" placeholder="Enter store name" />
+    
+    <label>Number</label>
+    <InputNumber @bind-Value="store.Number" placeholder="Enter store number" />
+
+    <label>Address</label>
+    <InputText @bind-Value="store.Address" placeholder="Enter address" />
+
+    <label>Postal Code</label>
+    <InputText @bind-Value="store.PostalCode" placeholder="Enter postal code" />
+
+    <label>City</label>
+    <InputText @bind-Value="store.City" placeholder="Enter city" />
+
+    <label>Phone</label>
+    <InputText @bind-Value="store.Phone" placeholder="Enter phone number" />
+
+    <label>Email</label>
+    <InputText @bind-Value="store.EMail" placeholder="Enter email" />
+
+    <label>Store Owner</label>
+    <InputText @bind-Value="store.StoreOwner" placeholder="Enter store owner" />
+
+    <label>Chain</label>
+    <InputSelect @bind-Value="store.ChainID">
+        <option value="">Select a chain</option>
+        @foreach (var chain in chains)
+        {
+            <option value="@chain.Id">@chain.Name</option>
+        }
+    </InputSelect>
+
+    <button type="submit">Submit</button>
+</EditForm>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <p style="color:red">@ErrorMessage</p>
+}
+
+@code {
+    private Store store = new Store();
+    private List<Chain> chains = new List<Chain>();
+    private string ErrorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        chains = await ChainDB.GetChains();
+    }
+
+    async Task HandleSubmit()
+    {
+        try
+        {
+            store.CreatedOn = DateTime.Now;
+            await StoreDB.CreateStore(store);
+            NavigationManager.NavigateTo("/Stores");
+        }
+        catch (InvalidOperationException ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "An unexpected error occurred.";
+        }
+    }
+}

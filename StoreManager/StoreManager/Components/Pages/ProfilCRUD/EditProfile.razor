@@ -1,0 +1,71 @@
+﻿@page "/edit-profile/{email}"
+@inject IProfileDB ProfileDB
+@using StoreManager.Models
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
+
+@inject IRoleDB RoleDB
+
+<h3>Edit Profile</h3>
+
+<EditForm Model="profile" OnSubmit="HandleSubmit" FormName="EditProfile">
+    <label>Email</label>
+    <InputText @bind-Value="profile.EMail" />
+    <ValidationMessage For="() => profile.EMail" />
+
+    <label>Name</label>
+    <InputText @bind-Value="profile.Name" />
+    <ValidationMessage For="() => profile.Name" />
+
+    <label>Password</label>
+    <InputText @bind-Value="profile.Password" type="password" />
+    <ValidationMessage For="() => profile.Password" />
+
+    <label for="role">Role:</label>
+    x
+    <InputSelect @bind-Value="profile.Role">
+        <option value="">Select a role</option>
+        @foreach (var role in roles)
+        {
+            <option value="@role.Name">@role.Name</option>
+        }
+    </InputSelect>
+
+    <button type="submit">Submit</button>
+</EditForm>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <p style="color:red">@ErrorMessage</p>
+}
+
+@code {
+    private Profile profile = new Profile();
+    private string ErrorMessage;
+    [Parameter] public string email { get; set; }
+    private List<IdentityRole> roles = new List<IdentityRole>();
+   
+    protected override async Task OnInitializedAsync()
+    {
+        roles = await RoleDB.GetRolesAsync();
+        profile = await ProfileDB.GetProfileByEmail(email);
+    }
+
+    async Task HandleSubmit()
+    {
+        try
+        {
+            await ProfileDB.UpdateProfile(profile);
+            NavigationManager.NavigateTo("/profiles");
+        }
+        catch (InvalidOperationException ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "An unexpected error occurred.";
+        }
+    }
+}

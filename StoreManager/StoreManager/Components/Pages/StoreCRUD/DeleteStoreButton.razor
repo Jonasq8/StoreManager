@@ -1,0 +1,53 @@
+﻿@page "/delete-store/{id:guid}"
+@inject IStoreDB StoreDB
+@using StoreManager.Models
+@using Microsoft.AspNetCore.Components
+@rendermode InteractiveServer
+@attribute [Authorize]
+
+
+
+<button @onclick="Delete">Delete</button>
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <p style="color:red">@ErrorMessage</p>
+}
+
+@code {
+    private Store store;
+    private string ErrorMessage;
+
+    [Parameter]
+    public Guid Id { get; set; }
+
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        store = await StoreDB.GetStoreById(Id);
+    }
+
+    private async Task Delete()
+    {
+        try
+        {
+            await StoreDB.DeleteStore(Id);
+            NavigationManager.NavigateTo("/Stores"); // Navigate to chains list page
+        }
+        catch (InvalidOperationException ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+        catch (KeyNotFoundException ex)
+        {
+            ErrorMessage = "Store not found.";
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "An unexpected error occurred.";
+        }
+    }
+}
+
+

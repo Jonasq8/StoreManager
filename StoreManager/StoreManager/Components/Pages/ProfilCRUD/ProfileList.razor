@@ -1,0 +1,91 @@
+﻿@page "/profiles"
+@attribute [Authorize(Roles = "Admin")]
+
+@using StoreManager.Models
+@attribute [StreamRendering(true)]
+
+@inject IProfileDB ProfileDB
+
+<h3 class="w-100">Profiles</h3>
+
+
+@if (profiles == null)
+{
+    <div class="text-center">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+else if (profiles.Count == 0)
+{
+    <p class="text-center">No profiles found.</p>
+}
+else
+{
+    <div class="container">
+        <div class="row">
+            @foreach (var profile in profiles)
+            {
+                <div class="col-md-4 col-sm-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">@profile.Name</h5>
+                            <p class="card-text"><strong>Email:</strong> @profile.EMail</p>
+
+                        </div>
+                        <div class="card-footer text-right">
+                            <EditProfileButton EMail="@profile.EMail" />
+                            <DeleteProfileButton EMail="@profile.EMail" />
+                            </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+
+@if (profiles == null)
+{
+    <span>Loading...</span>
+}
+else if (profiles.Count == 0)
+{
+    <span>No profiles</span>
+}
+else
+{
+    <table class="flex flex-row">
+        <tr class="m-10">
+            <th>@nameof(Profile.EMail)</th>
+            <th>@nameof(Profile.Name)</th>
+            <th>@nameof(Profile.Role)</th>
+            <th>@nameof(Profile.CreatedOn)</th>
+            <th>Actions</th>
+        </tr>
+
+        @foreach (Profile profile in profiles)
+        {
+            <tr>
+                <td>@profile.EMail</td>
+                <td>@profile.Name</td>
+                <td>@profile.Role</td>
+                <td>@profile.CreatedOn</td>
+                <td>
+                    <EditProfileButton EMail="@profile.EMail" />
+                    <DeleteProfileButton EMail="@profile.EMail" />
+                </td>
+            </tr>
+        }
+    </table>
+}
+<CreateProfileButton />
+
+@code {
+    List<Profile>? profiles = null;
+    protected override async Task OnInitializedAsync()
+    {
+        profiles = await ProfileDB.GetProfiles();
+    }
+}

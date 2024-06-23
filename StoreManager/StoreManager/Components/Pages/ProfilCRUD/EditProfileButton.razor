@@ -1,0 +1,15 @@
+﻿@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
+
+<button class="btn btn-primary" @onclick="EditProfile">Edit</button>
+
+@code {
+    [Parameter]
+    public string EMail { get; set; }
+
+    private void EditProfile()
+    {
+        NavigationManager.NavigateTo($"/edit-profile/{EMail}");
+    }
+}

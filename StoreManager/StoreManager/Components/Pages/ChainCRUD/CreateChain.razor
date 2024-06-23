@@ -1,0 +1,51 @@
+﻿@page "/create-chain"
+@inject IChainDB ChainDB
+@using StoreManager.Models
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+@attribute [Authorize]
+
+
+<h3>CreateChain</h3>
+
+<EditForm Model="chain" OnSubmit="HandleSubmit" FormName="CreateChain">
+    <label> Name</label>
+    <InputText @bind-Value="chain.Name"> @chain.Name</InputText>
+    <button type="submit" >Submit </button>
+
+</EditForm>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <p style="color:red">@ErrorMessage</p>
+}
+
+@code {
+    // [SupplyParameterFromForm]
+    Chain chain { get; set; }
+    = new Chain();
+    private string ErrorMessage;
+    async Task HandleSubmit()
+    {
+
+
+        try
+        {
+            chain.CreatedOn = DateTime.Now;
+            await ChainDB.CreateChain(chain);
+            // Navigate to another page or show success message
+            NavigationManager.NavigateTo("chains");
+        }
+        catch (InvalidOperationException ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "An unexpected error occurred.";
+        }
+
+
+        
+    }
+}

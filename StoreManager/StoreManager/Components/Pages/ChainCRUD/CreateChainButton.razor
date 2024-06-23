@@ -1,0 +1,13 @@
+﻿@attribute [Authorize]
+
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<button @onclick="CreateChain">Create Chain</button>
+
+@code {
+    void CreateChain()
+    {
+        NavigationManager.NavigateTo("/create-chain");
+    }
+}

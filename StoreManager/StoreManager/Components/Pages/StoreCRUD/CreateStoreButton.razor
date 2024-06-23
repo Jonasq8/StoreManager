@@ -1,0 +1,12 @@
+﻿@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+@attribute [Authorize]
+
+<button @onclick="CreateStore ">Create Store</button>
+
+@code {
+    void CreateStore()
+    {
+        NavigationManager.NavigateTo("/create-store");
+    }
+}

@@ -1,0 +1,28 @@
+﻿@page "/"
+
+@inject IProfileDB ProfileDB
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+
+
+
+<PageTitle>Home</PageTitle>
+<h1>Hello @UserName </h1>
+
+
+
+
+@code{
+    public string UserName { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        var user = authstate.User;
+        if (!string.IsNullOrEmpty(user.Identity.Name)){
+            var profile = await ProfileDB.GetProfileByEmail(user.Identity.Name);
+
+            UserName = profile.Name;
+            
+        }
+    }
+
+}

@@ -1,0 +1,52 @@
+﻿@attribute [Authorize]
+
+@page "/delete-chain/{id:guid}"
+@inject IChainDB ChainDB
+@using StoreManager.Models
+@using Microsoft.AspNetCore.Components
+@rendermode InteractiveServer
+
+
+
+<button @onclick="Delete">Delete</button>
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <p style="color:red">@ErrorMessage</p>
+}
+
+@code {
+    private Chain chain;
+    private string ErrorMessage;
+
+    [Parameter]
+    public Guid Id { get; set; }
+
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        chain = await ChainDB.GetChainById(Id);
+    }
+
+    private async Task Delete()
+    {
+        try
+        {
+            await ChainDB.DeleteChain(Id);
+            NavigationManager.NavigateTo("/chains"); // Navigate to chains list page
+        }
+        catch (InvalidOperationException ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+        catch (KeyNotFoundException ex)
+        {
+            ErrorMessage = "Chain not found.";
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "An unexpected error occurred.";
+        }
+    }
+}

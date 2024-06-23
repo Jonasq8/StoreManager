@@ -1,0 +1,12 @@
+﻿@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
+
+<button class="btn btn-primary" @onclick="CreateProfile">Create Profile</button>
+
+@code {
+    private void CreateProfile()
+    {
+        NavigationManager.NavigateTo("/create-profile");
+    }
+}

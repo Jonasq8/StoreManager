@@ -1,0 +1,18 @@
+﻿@attribute [Authorize]
+
+
+@inject NavigationManager NavigationManager
+
+@rendermode InteractiveServer
+
+<button @onclick="EditChain">Edit</button>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    void EditChain()
+    {
+        NavigationManager.NavigateTo("/edit-chain/"+Id);
+    }
+}
